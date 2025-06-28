@@ -3,6 +3,7 @@ package com.jmachuca.curso.springboot.di.factura.springboot_di_factura.models;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +13,11 @@ public class Invoice {
     @Autowired
     private Client client;
 
-    @Value("${invoice.description}")
+    @Value("${invoice.description.office}")
     private String description;
 
     @Autowired
+    @Qualifier("itemsInvoiceOffice")
     private List<Item> items;
 
     public Client getClient() {
@@ -40,5 +42,25 @@ public class Invoice {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    // Tradicional
+    // public int getTotal() {
+    //     int total = 0;
+
+    //     for (Item item : this.items) {
+    //         total += item.getImporte();
+    //     }
+
+    //     return total;
+    // }
+
+    // Utilizando API Stream
+    public int getTotal() {
+        int total = items.stream()
+                        .map(item -> item.getImporte())
+                        .reduce(0, (sum, importe) -> sum + importe);
+        
+        return total;
     }
 }
