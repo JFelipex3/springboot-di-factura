@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
 @Component
 public class Invoice {
 
@@ -19,6 +21,15 @@ public class Invoice {
     @Autowired
     @Qualifier("itemsInvoiceOffice")
     private List<Item> items;
+
+    // En este punto ya se encuentran los valores de los atributos, eso no ocurre en el contructor
+    @PostConstruct
+    public void init() {
+        System.out.println("Creando el componente de la factura");
+        client.setName(client.getName().concat(" Felipe"));
+        //this.description = description.concat(" del cliente ").concat(client.getName()).concat(" ").concat(client.getLastname());
+        this.description = description.join(" ", description, "de cliente", client.getName(), client.getLastname());
+    }
 
     public Client getClient() {
         return client;
